@@ -464,6 +464,7 @@ class MainPage:
             info["cpumodel"] = get_cpu_name()
             info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
             info["platform"] = sabnzbd.PLATFORM
+            info["confirm_mass_edit"] = int(cfg.confirm_mass_edit())
 
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (
@@ -896,6 +897,7 @@ SPECIAL_BOOL_LIST = (
     "allow_old_ssl_tls",
     "enable_season_sorting",
     "verify_xff_header",
+    "confirm_mass_edit",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",

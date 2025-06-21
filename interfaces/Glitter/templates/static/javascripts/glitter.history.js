@@ -320,6 +320,10 @@ function HistoryListModel(parent) {
 
     // Check all
     self.checkAllJobs = function(item, event) {
+        if(self.parent.confirmMassEdit() && !confirm(glitterTranslate.massEditWarning)) {
+            event.target.checked = !event.target.checked;
+            return false;
+        }
         // Get which ones we care about
         var allChecks = $('.history-table input[name="multiedit"]').filter(':not(:disabled):visible');
 

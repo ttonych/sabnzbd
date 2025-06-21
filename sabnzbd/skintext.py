@@ -868,6 +868,8 @@ SKIN_TEXT = {
     "Glitter-speed": TT("Speed"),
     "Glitter-confirmDeleteQueue": TT("Confirm Queue Deletions"),
     "Glitter-confirmDeleteHistory": TT("Confirm History Deletions"),
+    "Glitter-confirmMassEdit": TT("Confirm mass changes"),
+    "Glitter-massEditWarning": TT("Are you sure you want to modify all items?"),
     "Glitter-keyboardShortcuts": TT("Keyboard shortcuts"),
     "Glitter-keyboardShortcuts-arrows": TT("Shift+Arrow key: Browse Queue and History pages"),
     "Glitter-pausePrompt": TT("How long or untill when do you want to pause? (in English!)"),

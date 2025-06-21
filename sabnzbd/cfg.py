@@ -506,6 +506,7 @@ x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
 enable_season_sorting = OptionBool("misc", "enable_season_sorting", True)
 verify_xff_header = OptionBool("misc", "verify_xff_header", False)
+confirm_mass_edit = OptionBool("misc", "confirm_mass_edit", True)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
