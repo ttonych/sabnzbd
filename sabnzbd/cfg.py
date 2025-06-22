@@ -394,6 +394,7 @@ backup_dir = OptionDir("misc", "backup_dir")
 dirscan_dir = OptionDir("misc", "dirscan_dir", writable=False)
 dirscan_speed = OptionNumber("misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600)
 password_file = OptionDir("misc", "password_file", "", create=False)
+dirscan_pause = OptionBool("misc", "dirscan_pause", False)
 log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_default_if_empty)
 
 

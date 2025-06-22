@@ -26,7 +26,13 @@ import threading
 from typing import Generator, Set, Optional, Tuple
 
 import sabnzbd
-from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES, VALID_NZB_FILES, AddNzbFileResult
+from sabnzbd.constants import (
+    SCAN_FILE_NAME,
+    VALID_ARCHIVES,
+    VALID_NZB_FILES,
+    AddNzbFileResult,
+    PAUSED_PRIORITY,
+)
 import sabnzbd.filesystem as filesystem
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -201,7 +207,10 @@ class DirScanner(threading.Thread):
             return
 
         # Add the NZB's
-        res, _ = sabnzbd.nzbparser.add_nzbfile(path, catdir=catdir, keep=False)
+        kwargs = {"catdir": catdir, "keep": False}
+        if cfg.dirscan_pause():
+            kwargs["priority"] = PAUSED_PRIORITY
+        res, _ = sabnzbd.nzbparser.add_nzbfile(path, **kwargs)
         if res is AddNzbFileResult.RETRY or res is AddNzbFileResult.ERROR:
             # Retry later, for example when we can't read the file
             self.suspected[path] = stat_tuple

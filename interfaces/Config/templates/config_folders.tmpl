@@ -80,6 +80,11 @@
                     <input type="text" name="password_file" id="password_file" value="$password_file" class="fileBrowserField" data-initialdir="$my_home" data-files="1" />
                     <span class="desc">$T('explain-password_file')</span>
                 </div>
+                <div class="field-pair advanced-settings">
+                    <label class="config" for="dirscan_pause">$T('opt-dirscan_pause')</label>
+                    <input type="checkbox" name="dirscan_pause" id="dirscan_pause" value="1" <!--#if int($dirscan_pause) > 0 then 'checked="checked"' else ''#--> />
+                    <span class="desc">$T('explain-dirscan_pause')</span>
+                </div>
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
 

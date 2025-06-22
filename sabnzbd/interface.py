@@ -743,7 +743,7 @@ LIST_DIRPAGE = (
     "password_file",
 )
 
-LIST_BOOL_DIRPAGE = ("fulldisk_autoresume",)
+LIST_BOOL_DIRPAGE = ("fulldisk_autoresume", "dirscan_pause")
 
 
 class ConfigFolders:
