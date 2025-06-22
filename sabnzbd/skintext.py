@@ -385,6 +385,8 @@ SKIN_TEXT = {
     "explain-email_dir": TT("Folder containing user-defined email templates."),
     "opt-password_file": TT("Password file"),
     "explain-password_file": TT("File containing all passwords to be tried on encrypted RAR files."),
+    "opt-dirscan_pause": TT("Pause jobs added from Watched Folder"),
+    "explain-dirscan_pause": TT("Jobs imported from the Watched Folder will be added to the queue in a paused state."),
     "systemFolders": TT("System Folders"),
     "hiddenFolders": TT("Hidden Folders"),
     "opt-admin_dir": TT("Administrative Folder"),

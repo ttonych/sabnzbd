@@ -22,7 +22,8 @@ import asyncio
 
 import pyfakefs.fake_filesystem_unittest as ffs
 
-from sabnzbd.constants import AddNzbFileResult
+from sabnzbd.constants import AddNzbFileResult, PAUSED_PRIORITY
+import sabnzbd.cfg as cfg
 from tests.testhelper import *
 
 # Set the global uid for fake filesystems to a non-root user;
@@ -83,6 +84,26 @@ class TestDirScanner:
         sabnzbd.nzbparser.add_nzbfile.assert_any_call(
             os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), catdir or "", path), catdir=catdir, keep=False
         )
+
+    @pytest.mark.asyncio
+    async def test_adds_nzb_paused_when_enabled(self, mock_sleep, fs, mocker):
+        mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(AddNzbFileResult.ERROR, []))
+        mocker.patch("sabnzbd.config.save_config", return_value=True)
+
+        cfg.dirscan_pause.set(True)
+        fs.create_file("file.nzb", contents="FAKEFILE")
+
+        scanner = sabnzbd.dirscanner.DirScanner()
+
+        await scanner.scan_async("")
+
+        sabnzbd.nzbparser.add_nzbfile.assert_any_call(
+            os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), "file.nzb"),
+            catdir=None,
+            keep=False,
+            priority=PAUSED_PRIORITY,
+        )
+        cfg.dirscan_pause.set(False)
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
