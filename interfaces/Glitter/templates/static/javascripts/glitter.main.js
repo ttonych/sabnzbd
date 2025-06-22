@@ -18,6 +18,8 @@ function ViewModel() {
     self.displayFullWidth = ko.observable(false).extend({ persist: 'displayFullWidth' });
     self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
     self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
+    self.confirmMassEditQueue = ko.observable(Boolean(confirmMassEditQueue));
+    self.confirmMassEditHistory = ko.observable(Boolean(confirmMassEditHistory));
     self.keyboardShortcuts = ko.observable(true).extend({ persist: 'keyboardShortcuts' });
     self.extraQueueColumns = ko.observableArray([]).extend({ persist: 'extraColumns' });
     self.extraHistoryColumns = ko.observableArray([]).extend({ persist: 'extraHistoryColumns' });
