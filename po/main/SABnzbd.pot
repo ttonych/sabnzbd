@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.5.0\n"
+"Project-Id-Version: SABnzbd-4.5.1\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: team@sabnzbd.org\n"
 "Language-Team: SABnzbd <team@sabnzbd.org>\n"
@@ -4382,6 +4382,18 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Confirm History Deletions"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Confirm mass changes for Queue"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Confirm mass changes for History"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Are you sure you want to modify all items?"
 msgstr ""
 
 #: sabnzbd/skintext.py
