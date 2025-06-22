@@ -1,0 +1,49 @@
+name: Build Windows Executable
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+env:
+  PYTHONNODEBUGRANGES: 1
+
+jobs:
+  build_windows:
+    name: Build Windows binary
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+        architecture: "x64"
+        cache: pip
+        cache-dependency-path: "**/requirements.txt"
+
+    - name: Install dependencies
+      run: |
+        python --version
+        python -m pip install --upgrade pip wheel
+        pip install -r requirements.txt --no-dependencies
+        pip install -r builder/requirements.txt --no-dependencies
+
+    - name: Restore private key
+      run: |
+        mkdir private
+        echo "${{ secrets.PRIVATE_KEY }}" > private/private.key
+
+    - name: Build Windows standalone binary
+      run: python builder/package.py installer
+
+    - name: Upload EXE as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-build
+        path: dist/*.exe
