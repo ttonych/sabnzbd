@@ -312,8 +312,8 @@ function QueueListModel(parent) {
 
     // Check all
     self.checkAllJobs = function(item, event) {
-        if(self.parent.confirmMassEdit() && !confirm(glitterTranslate.massEditWarning)) {
-            event.target.checked = !event.target.checked;
+        if(event.target.checked && self.parent.confirmMassEditQueue() && !confirm(glitterTranslate.massEditWarning)) {
+            event.target.checked = false;
             return false;
         }
         // Get which ones we care about
