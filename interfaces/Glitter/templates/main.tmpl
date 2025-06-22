@@ -47,6 +47,8 @@
             var sabSpeedHistory = [$bytespersec_list];
             var newRelease = "$new_release";
             var newReleaseUrl = "$new_rel_url";
+            var confirmMassEditQueue = $confirm_mass_edit_queue;
+            var confirmMassEditHistory = $confirm_mass_edit_history;
             var glitterIsBeta = ("$version".search(/[develop|Alpha|Beta|RC]/)) > 0;
 
             var glitterTranslate = new Object();
@@ -74,6 +76,7 @@
             glitterTranslate.noLocalStorage = "$T('Glitter-noLocalStorage')";
             glitterTranslate.glitterTips = "$T('Glitter-glitterTips')";
             glitterTranslate.updateAvailable = "$T('Glitter-updateAvailable')";
+            glitterTranslate.massEditWarning = "$T('Glitter-massEditWarning')";
             glitterTranslate.defaultText = "$T('default')";
             glitterTranslate.noneText = "$T('None')";
             glitterTranslate.moreText = "$T('Glitter-more')";
