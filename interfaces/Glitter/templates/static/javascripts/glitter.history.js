@@ -322,6 +322,13 @@ function HistoryListModel(parent) {
     self.checkAllJobs = function(item, event) {
         // Get which ones we care about
         var allChecks = $('.history-table input[name="multiedit"]').filter(':not(:disabled):visible');
+        var selectedCount = allChecks.filter(":checked").length;
+
+        if(event.target.checked && selectedCount === 0 && self.parent.confirmMassEditHistory() && !confirm(glitterTranslate.massEditWarning)) {
+            event.target.checked = false;
+            setCheckAllState('#multiedit-checkall-history', '.history-table input[name="multiedit"]');
+            return false;
+        }
 
         // We need to re-evaltuate the state of this check-all
         // Otherwise the 'inderterminate' will be overwritten by the click event!
