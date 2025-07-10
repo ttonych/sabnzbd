@@ -318,6 +318,13 @@ function QueueListModel(parent) {
         }
         // Get which ones we care about
         var allChecks = $('.queue-table input[name="multiedit"]').filter(':not(:disabled):visible');
+        var selectedCount = allChecks.filter(":checked").length;
+
+        if(event.target.checked && selectedCount === 0 && self.parent.confirmMassEditQueue() && !confirm(glitterTranslate.massEditWarning)) {
+            event.target.checked = false;
+            setCheckAllState('#multiedit-checkall-queue', '.queue-table input[name="multiedit"]');
+            return false;
+        }
 
         // We need to re-evaltuate the state of this check-all
         // Otherwise the 'inderterminate' will be overwritten by the click event!
