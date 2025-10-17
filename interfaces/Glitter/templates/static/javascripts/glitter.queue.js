@@ -313,19 +313,19 @@ function QueueListModel(parent) {
     // Check all
     self.checkAllJobs = function(item, event) {
         var allChecks = $('.queue-table input[name="multiedit"]').filter(':not(:disabled):visible');
+        var checkAllControl = event.currentTarget;
 
         if(event.ctrlKey) {
             if(self.multiEditItems().length) {
                 self.multiEditItems.removeAll();
             }
             allChecks.prop({'checked': false});
-            event.target.checked = false;
-            event.target.indeterminate = false;
+            $(checkAllControl).prop({'checked': false, 'indeterminate': false});
             setCheckAllState('#multiedit-checkall-queue', '.queue-table input[name="multiedit"]');
             return false;
         }
-        if(event.target.checked && self.parent.confirmMassEditQueue() && !confirm(glitterTranslate.massEditWarning)) {
-            event.target.checked = false;
+        if(checkAllControl.checked && self.parent.confirmMassEditQueue() && !confirm(glitterTranslate.massEditWarning)) {
+            checkAllControl.checked = false;
             return false;
         }
         // Get which ones we care about
@@ -336,7 +336,7 @@ function QueueListModel(parent) {
 
         // Now we can check what happend
         // For when some are checked, or all are checked (but not partly)
-        if(event.target.indeterminate || (event.target.checked && !event.target.indeterminate)) {
+        if(checkAllControl.indeterminate || (checkAllControl.checked && !checkAllControl.indeterminate)) {
             var allActive = allChecks.filter(":checked")
             // First remove the from the list
             if(allActive.length == self.multiEditItems().length) {
@@ -358,7 +358,7 @@ function QueueListModel(parent) {
             // None are checked, so check and add them all
             allChecks.prop('checked', true)
             allChecks.each(function() { self.multiEditItems.push(ko.dataFor(this)) })
-            event.target.checked = true
+            checkAllControl.checked = true
 
             // Now we fire the update
             self.doMultiEditUpdate()
