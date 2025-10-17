@@ -562,7 +562,10 @@ class NzbQueue:
         """Sort queue by field: "name", "size" or "avg_age" or by percentage remaining
         Direction is specified as "desc" or "asc"
         """
-        self._backfill_time_added()
+        if self._backfill_time_added():
+            # Persist synthetic timestamps generated for legacy jobs so
+            # subsequent restarts and API consumers observe stable values.
+            self.save()
 
         field = field.lower()
         reverse = False

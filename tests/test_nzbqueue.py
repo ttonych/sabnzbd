@@ -34,10 +34,11 @@ def _make_job(name, added, priority=0):
         remaining=0,
         time_added=added,
         priority=priority,
+        removed_from_queue=False,
     )
 
 
-def test_sort_queue_time_added():
+def test_sort_queue_time_added(monkeypatch):
     queue = NzbQueue()
 
     older = _make_job("older", 100)
@@ -45,6 +46,8 @@ def test_sort_queue_time_added():
     unknown = _make_job("unknown", None)
 
     queue._NzbQueue__nzo_list = [newer, unknown, older]
+
+    monkeypatch.setattr(queue, "save", lambda *args, **kwargs: None)
 
     queue.sort_queue("time_added", "asc")
     assert [job.final_name for job in queue._NzbQueue__nzo_list] == ["unknown", "older", "newer"]
@@ -99,3 +102,24 @@ def test_backfill_time_added_noop():
     changed = queue._backfill_time_added()
 
     assert changed is False
+
+
+def test_sort_queue_backfill_triggers_save(monkeypatch):
+    queue = NzbQueue()
+
+    existing = _make_job("existing", 50)
+    missing = _make_job("missing", None)
+
+    queue._NzbQueue__nzo_list = [existing, missing]
+
+    called = []
+
+    def fake_save(*args, **kwargs):
+        called.append(True)
+
+    monkeypatch.setattr(queue, "save", fake_save)
+
+    queue.sort_queue("time_added", "asc")
+
+    assert called == [True]
+    assert all(job.time_added for job in queue._NzbQueue__nzo_list)
