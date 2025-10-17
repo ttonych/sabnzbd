@@ -890,6 +890,8 @@ SKIN_TEXT = {
     "Glitter-sortRemaining": TT("Sort by % downloaded <small>Most&rarr;Least</small>"),
     "Glitter-sortAgeAsc": TT("Sort by Age <small>Oldest&rarr;Newest</small>"),
     "Glitter-sortAgeDesc": TT("Sort by Age <small>Newest&rarr;Oldest</small>"),
+    "Glitter-sortAddedAsc": TT("Sort by Date Added <small>Oldest&rarr;Newest</small>"),
+    "Glitter-sortAddedDesc": TT("Sort by Date Added <small>Newest&rarr;Oldest</small>"),
     "Glitter-sortNameAsc": TT("Sort by Name <small>A&rarr;Z</small>"),
     "Glitter-sortNameDesc": TT("Sort by Name <small>Z&rarr;A</small>"),
     "Glitter-sortSizeAsc": TT("Sort by Size <small>Smallest&rarr;Largest</small>"),

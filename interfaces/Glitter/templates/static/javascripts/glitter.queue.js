@@ -252,6 +252,14 @@ function QueueListModel(parent) {
                 sort = 'size';
                 dir = 'desc';
                 break;
+            case 'sortAddedAsc':
+                sort = 'time_added';
+                dir = 'asc';
+                break;
+            case 'sortAddedDesc':
+                sort = 'time_added';
+                dir = 'desc';
+                break;
         }
 
         // Show notification

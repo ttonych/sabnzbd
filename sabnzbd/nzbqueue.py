@@ -573,6 +573,9 @@ class NzbQueue:
             reverse = not reverse
             logging.info("Sorting by average date... (reversed: %s)", reverse)
             sort_function = lambda nzo: nzo.avg_date
+        elif field == "time_added":
+            logging.info("Sorting by time added (reversed: %s)", reverse)
+            sort_function = lambda nzo: nzo.time_added or 0
         elif field == "remaining":
             if self.__nzo_list:
                 logging.debug("Sorting by percentage downloaded...")
