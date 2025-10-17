@@ -120,6 +120,10 @@ class NzbQueue:
                         except Exception:
                             pass
 
+        if self._backfill_time_added():
+            # Persist the new timestamps so follow-up restarts keep them
+            self.save()
+
     @NzbQueueLocker
     def scan_jobs(self, all_jobs: bool = False, action: bool = True) -> List[str]:
         """Scan "incomplete" for missing folders,
@@ -558,6 +562,8 @@ class NzbQueue:
         """Sort queue by field: "name", "size" or "avg_age" or by percentage remaining
         Direction is specified as "desc" or "asc"
         """
+        self._backfill_time_added()
+
         field = field.lower()
         reverse = False
         if safe_lower(direction) == "desc":
@@ -587,6 +593,23 @@ class NzbQueue:
         # Apply sort by requested order, then restore priority ordering
         self.__nzo_list.sort(key=sort_function, reverse=reverse)
         self.__nzo_list.sort(key=lambda nzo: nzo.priority, reverse=True)
+
+    def _backfill_time_added(self) -> bool:
+        """Assign synthetic timestamps to jobs that predate the time_added attribute."""
+        missing = [nzo for nzo in self.__nzo_list if not getattr(nzo, "time_added", None)]
+        if not missing:
+            return False
+
+        existing = [getattr(nzo, "time_added") for nzo in self.__nzo_list if getattr(nzo, "time_added", None)]
+        baseline = min(existing) if existing else int(time.time())
+        next_value = max(0, baseline - len(missing))
+
+        for nzo in self.__nzo_list:
+            if not getattr(nzo, "time_added", None):
+                nzo.time_added = next_value
+                next_value += 1
+
+        return True
 
     def update_sort_order(self):
         """Resorts the queue if it is useful for the selected sort method"""

@@ -21,6 +21,8 @@ tests.test_nzbqueue - Tests for sabnzbd.nzbqueue
 
 from types import SimpleNamespace
 
+import sabnzbd.nzbqueue as nzbqueue
+
 from sabnzbd.nzbqueue import NzbQueue
 
 
@@ -51,3 +53,49 @@ def test_sort_queue_time_added():
 
     queue.sort_queue("time_added", "desc")
     assert [job.final_name for job in queue._NzbQueue__nzo_list] == ["newer", "older", "unknown"]
+
+
+def test_backfill_time_added(monkeypatch):
+    queue = NzbQueue()
+
+    first = _make_job("first", None)
+    second = _make_job("second", 0)
+
+    queue._NzbQueue__nzo_list = [first, second]
+
+    monkeypatch.setattr(nzbqueue.time, "time", lambda: 123)
+
+    changed = queue._backfill_time_added()
+
+    assert changed is True
+    assert [job.time_added for job in queue._NzbQueue__nzo_list] == [121, 122]
+
+
+def test_backfill_time_added_respects_existing(monkeypatch):
+    queue = NzbQueue()
+
+    missing = _make_job("missing", None)
+    existing = _make_job("existing", 50)
+    second_missing = _make_job("second_missing", 0)
+
+    queue._NzbQueue__nzo_list = [missing, existing, second_missing]
+
+    monkeypatch.setattr(nzbqueue.time, "time", lambda: 999)
+
+    changed = queue._backfill_time_added()
+
+    assert changed is True
+    assert [job.time_added for job in queue._NzbQueue__nzo_list] == [48, 50, 49]
+
+
+def test_backfill_time_added_noop():
+    queue = NzbQueue()
+
+    first = _make_job("first", 100)
+    second = _make_job("second", 200)
+
+    queue._NzbQueue__nzo_list = [first, second]
+
+    changed = queue._backfill_time_added()
+
+    assert changed is False
