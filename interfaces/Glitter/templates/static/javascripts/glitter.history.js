@@ -321,16 +321,31 @@ function HistoryListModel(parent) {
 
     // Check all
     self.checkAllJobs = function(item, event) {
-        var allChecks = $('.history-table input[name="multiedit"]').filter(':not(:disabled):visible');
-        var checkAllControl = event.currentTarget;
+        var checkAllControl = event.target && event.target.type === 'checkbox' ? event.target : event.currentTarget;
+        var allChecks = $('.history-table input[name="multiedit"]').filter(':not(:disabled)');
 
         if(event.ctrlKey) {
+            event.preventDefault();
+            event.stopPropagation();
+
             if(self.multiEditItems().length) {
                 self.multiEditItems.removeAll();
             }
-            allChecks.prop({'checked': false});
-            $(checkAllControl).prop({'checked': false, 'indeterminate': false});
-            setCheckAllState('#multiedit-checkall-history', '.history-table input[name="multiedit"]');
+
+            allChecks.filter(':checked').each(function() {
+                this.checked = false;
+            });
+
+            if(checkAllControl && checkAllControl.type === 'checkbox') {
+                checkAllControl.checked = false;
+                checkAllControl.indeterminate = false;
+            }
+
+            var scheduleStateReset = window.requestAnimationFrame || function(callback) { return setTimeout(callback, 0); };
+            scheduleStateReset(function() {
+                setCheckAllState('#multiedit-checkall-history', '.history-table input[name="multiedit"]');
+            });
+
             return false;
         }
         if(checkAllControl.checked && self.parent.confirmMassEditHistory() && !confirm(glitterTranslate.massEditWarning)) {
