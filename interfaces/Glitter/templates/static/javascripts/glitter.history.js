@@ -321,12 +321,23 @@ function HistoryListModel(parent) {
 
     // Check all
     self.checkAllJobs = function(item, event) {
+        var allChecks = $('.history-table input[name="multiedit"]').filter(':not(:disabled):visible');
+
+        if(event.ctrlKey) {
+            if(self.multiEditItems().length) {
+                self.multiEditItems.removeAll();
+            }
+            allChecks.prop({'checked': false});
+            event.target.checked = false;
+            event.target.indeterminate = false;
+            setCheckAllState('#multiedit-checkall-history', '.history-table input[name="multiedit"]');
+            return false;
+        }
         if(event.target.checked && self.parent.confirmMassEditHistory() && !confirm(glitterTranslate.massEditWarning)) {
             event.target.checked = false;
             return false;
         }
         // Get which ones we care about
-        var allChecks = $('.history-table input[name="multiedit"]').filter(':not(:disabled):visible');
 
         // We need to re-evaltuate the state of this check-all
         // Otherwise the 'inderterminate' will be overwritten by the click event!
