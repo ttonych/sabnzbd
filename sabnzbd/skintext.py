@@ -172,6 +172,8 @@ SKIN_TEXT = {
     "name": TT("Name"),  #: Queue page table column header
     "button-retry": TT("Retry"),  #: Queue page button
     "button-mark-completed": TT("Mark as Completed & Remove Temporary Files"),  #: History page button
+    "button-mark-status": TT("Set status"),  #: History page button
+    "confirm-mark-status": TT("Change status to %s?"),  #: History page confirmation popup
     "eoq-scripts": TT("Scripts"),  #: Queue page table, script selection menu
     "purgeQueue": TT("Purge Queue"),  #: Queue page button
     "purgeQueueConf": TT("Delete all items from the queue?"),  #: Confirmation popup

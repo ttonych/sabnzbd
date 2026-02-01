@@ -95,7 +95,19 @@
                                     <div class="col-sm-2">$T('status')</div>
                                     <div class="col-sm-10">
                                         <span data-bind="text: glitterTranslate.status[historyStatus.status()] ? glitterTranslate.status[historyStatus.status()] : statusText()"></span>
-                                        <a href="#" class="mark-completed-link" data-bind="visible: failed(), click: markAsCompleted" title="$T('button-mark-completed')"><span class="glyphicon glyphicon-ok"></span> $T('post-Completed')</a>
+                                        <!-- ko if: canMarkStatus() -->
+                                        <span class="history-status-actions" data-bind="visible: parent.markStatusOptions().length === 1">
+                                            <a href="#" class="mark-completed-link" data-bind="click: applyMarkStatus, attr: { title: parent.markStatusTooltip(selectedMarkStatus()) }">
+                                                <span class="glyphicon glyphicon-ok"></span> <span data-bind="text: parent.statusLabel(selectedMarkStatus())"></span>
+                                            </a>
+                                        </span>
+                                        <span class="history-status-actions" data-bind="visible: parent.markStatusOptions().length > 1">
+                                            <select class="history-status-select" data-bind="options: parent.markStatusOptions, optionsText: parent.statusLabel, value: selectedMarkStatus"></select>
+                                            <a href="#" class="mark-completed-link" data-bind="click: applyMarkStatus, attr: { title: parent.markStatusTooltip(selectedMarkStatus()) }">
+                                                <span class="glyphicon glyphicon-ok"></span> $T('button-mark-status')
+                                            </a>
+                                        </span>
+                                        <!-- /ko -->
                                     </div>
                                 </div>
                                 <div class="row">

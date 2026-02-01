@@ -463,6 +463,7 @@ class MainPage:
             info["platform"] = sabnzbd.PLATFORM
             info["confirm_mass_edit_queue"] = int(cfg.confirm_mass_edit_queue())
             info["confirm_mass_edit_history"] = int(cfg.confirm_mass_edit_history())
+            info["history_mark_statuses"] = cfg.history_mark_statuses.get_string()
 
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (
@@ -923,6 +924,7 @@ SPECIAL_LIST_LIST = (
     "host_whitelist",
     "local_ranges",
     "ext_rename_ignore",
+    "history_mark_statuses",
 )
 
 

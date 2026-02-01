@@ -20,6 +20,25 @@ function HistoryListModel(parent) {
     self.pagination = new paginationModel(self);
     self.isMultiEditing = ko.observable(false).extend({ persist: 'historyIsMultiEditing' });
     self.multiEditItems = ko.observableArray([]);
+    var parsedMarkStatuses = [];
+    if(typeof historyMarkStatuses === 'string' && historyMarkStatuses.trim() !== '') {
+        parsedMarkStatuses = historyMarkStatuses.split(/\s*,\s*/).filter(Boolean);
+    }
+    if(parsedMarkStatuses.length === 0) {
+        parsedMarkStatuses = ['Completed'];
+    }
+    self.markStatusOptions = ko.observableArray(parsedMarkStatuses);
+
+    self.statusLabel = function(status) {
+        return glitterTranslate.status[status] ? glitterTranslate.status[status] : status;
+    };
+
+    self.markStatusTooltip = function(status) {
+        if(status === 'Completed') {
+            return glitterTranslate.markComplete;
+        }
+        return glitterTranslate.markStatusConfirm.replace('%s', self.statusLabel(status));
+    };
 
     // Download history info
     self.downloadedToday = ko.observable();
@@ -451,10 +470,13 @@ function HistoryListModel(parent) {
     }
 
     // Mark jobs as completed
-    self.markAsCompleted = function(items) {
-        // Confirm
-        if(!confirm(glitterTranslate.markComplete)) {
-            return
+    self.markAsStatus = function(items, status) {
+        var selectedStatus = status || 'Completed';
+        var confirmText = selectedStatus === 'Completed'
+            ? glitterTranslate.markComplete
+            : glitterTranslate.markStatusConfirm.replace('%s', self.statusLabel(selectedStatus));
+        if(!confirm(confirmText)) {
+            return;
         }
         // Single or multiple items?
         var strIDs = '';
@@ -470,11 +492,17 @@ function HistoryListModel(parent) {
         callAPI({
             mode: 'history',
             name: 'mark_as_completed',
-            value: strIDs
+            value: strIDs,
+            status: selectedStatus
         }).then(function(response) {
             // Force refresh to update the UI
             self.parent.refresh(true);
         });
+    }
+
+    // Mark jobs as completed
+    self.markAsCompleted = function(items) {
+        self.markAsStatus(items, 'Completed');
     }
 
     // Mark all selected as completed
@@ -584,6 +612,17 @@ function HistoryModel(parent, data) {
         return self.script_line();
     });
 
+    self.selectedMarkStatus = ko.observable(parent.markStatusOptions()[0] || 'Completed');
+    self.canMarkStatus = ko.pureComputed(function() {
+        return self.failed() && parent.markStatusOptions().length > 0;
+    });
+
+    parent.markStatusOptions.subscribe(function(options) {
+        if(options.indexOf(self.selectedMarkStatus()) === -1) {
+            self.selectedMarkStatus(options[0] || 'Completed');
+        }
+    });
+
     // Extra history columns
     self.showColumn = function(param) {
         // Picked anything?
@@ -640,6 +679,10 @@ function HistoryModel(parent, data) {
     // Mark as completed button
     self.markAsCompleted = function() {
         parent.markAsCompleted(self);
+    };
+
+    self.applyMarkStatus = function() {
+        parent.markAsStatus(self, self.selectedMarkStatus());
     };
 
     // Update information only on click
