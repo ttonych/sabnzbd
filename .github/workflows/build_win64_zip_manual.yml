@@ -38,13 +38,18 @@ jobs:
         shell: bash
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            # Собирать именно head SHA PR (ветку автора PR)
-            echo "ref=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
-            echo "label=pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+            REF="${{ github.event.pull_request.head.sha }}"
+            LABEL="pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}"
           else
-            echo "ref=${{ inputs.ref }}" >> "$GITHUB_OUTPUT"
-            echo "label=manual-${{ inputs.ref }}" >> "$GITHUB_OUTPUT"
+            REF="${{ inputs.ref }}"
+            # sanitize label: replace "/" with "-"
+            SAFE_REF="${REF//\//-}"
+            LABEL="manual-${SAFE_REF}"
           fi
+
+          echo "ref=$REF" >> "$GITHUB_OUTPUT"
+          echo "label=$LABEL" >> "$GITHUB_OUTPUT"
+
 
       - name: Checkout (no credentials)
         uses: actions/checkout@v5
@@ -94,3 +99,4 @@ jobs:
           name: sabnzbd-win64-bin-${{ steps.ref.outputs.label }}
           path: "*-win64-bin.zip"
           if-no-files-found: error
+
