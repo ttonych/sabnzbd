@@ -20,9 +20,14 @@ function HistoryListModel(parent) {
     self.pagination = new paginationModel(self);
     self.isMultiEditing = ko.observable(false).extend({ persist: 'historyIsMultiEditing' });
     self.multiEditItems = ko.observableArray([]);
-    self.markStatusOptions = ko.observableArray(
-        Array.isArray(historyMarkStatuses) && historyMarkStatuses.length ? historyMarkStatuses : ['Completed']
-    );
+    var parsedMarkStatuses = [];
+    if(typeof historyMarkStatuses === 'string' && historyMarkStatuses.trim() !== '') {
+        parsedMarkStatuses = historyMarkStatuses.split(/\s*,\s*/).filter(Boolean);
+    }
+    if(parsedMarkStatuses.length === 0) {
+        parsedMarkStatuses = ['Completed'];
+    }
+    self.markStatusOptions = ko.observableArray(parsedMarkStatuses);
 
     self.statusLabel = function(status) {
         return glitterTranslate.status[status] ? glitterTranslate.status[status] : status;
