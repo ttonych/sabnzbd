@@ -101,6 +101,7 @@ _MSG_NO_PATH = "file does not exist"
 _MSG_OUTPUT_FORMAT = "Format not supported"
 _MSG_NO_SUCH_CONFIG = "Config item does not exist"
 _MSG_CONFIG_LOCKED = "Configuration locked"
+_MSG_BAD_STATUS = "invalid status"
 
 
 def api_handler(kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
@@ -534,11 +535,19 @@ def _api_history_delete(value: str, kwargs: Dict[str, Union[str, List[str]]]) ->
 def _api_history_mark_as_completed(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=nzo_id)"""
     if value:
+        status = (kwargs.get("status") or Status.COMPLETED).strip()
+        allowed_statuses = set(cfg.history_mark_statuses())
+        allowed_statuses.add(Status.COMPLETED)
+        if status not in allowed_statuses:
+            return report(_MSG_BAD_STATUS)
+
         history_db = sabnzbd.get_db_connection()
         for job in clean_comma_separated_list(value):
-            # Get incomplete path before marking as completed
-            incomplete_path = history_db.get_incomplete_path(job)
-            history_db.mark_as_completed(job)
+            incomplete_path = None
+            if status == Status.COMPLETED:
+                # Get incomplete path before marking as completed
+                incomplete_path = history_db.get_incomplete_path(job)
+            history_db.mark_as_status(job, status)
 
             # Remove incomplete folder if it exists
             if incomplete_path:

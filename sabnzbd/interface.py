@@ -31,6 +31,7 @@ import socket
 import ssl
 import functools
 import copy
+import json
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
@@ -463,6 +464,7 @@ class MainPage:
             info["platform"] = sabnzbd.PLATFORM
             info["confirm_mass_edit_queue"] = int(cfg.confirm_mass_edit_queue())
             info["confirm_mass_edit_history"] = int(cfg.confirm_mass_edit_history())
+            info["history_mark_statuses"] = json.dumps(cfg.history_mark_statuses())
 
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (
@@ -923,6 +925,7 @@ SPECIAL_LIST_LIST = (
     "host_whitelist",
     "local_ranges",
     "ext_rename_ignore",
+    "history_mark_statuses",
 )
 
 

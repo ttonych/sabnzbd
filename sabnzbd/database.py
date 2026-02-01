@@ -234,8 +234,12 @@ class HistoryDB:
 
     def mark_as_completed(self, job: str):
         """Mark a job as completed in the history"""
-        self.execute("""UPDATE history SET status = ? WHERE nzo_id = ?""", (Status.COMPLETED, job))
-        logging.info("[%s] Marked job %s as completed", caller_name(), job)
+        self.mark_as_status(job, Status.COMPLETED)
+
+    def mark_as_status(self, job: str, status: str):
+        """Mark a job as a specific status in the history"""
+        self.execute("""UPDATE history SET status = ? WHERE nzo_id = ?""", (status, job))
+        logging.info("[%s] Marked job %s as %s", caller_name(), job, status)
 
     def get_failed_paths(self, search: Optional[str] = None) -> List[str]:
         """Return list of all storage paths of failed jobs (may contain non-existing or empty paths)"""

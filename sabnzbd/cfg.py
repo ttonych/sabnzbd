@@ -52,6 +52,7 @@ from sabnzbd.constants import (
     DEF_STD_WEB_COLOR,
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
+    Status,
 )
 from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_network_path
 
@@ -120,6 +121,21 @@ def supported_unrar_parameters(value: str) -> ValidateResult:
             logging.error(msg)
             return msg, None
     return None, value
+
+
+def clean_history_mark_statuses(value: List[str]) -> ValidateResult:
+    """Clean custom history status labels."""
+    cleaned = []
+    for item in value:
+        if item is None:
+            continue
+        label = str(item).strip()
+        if not label or label in cleaned:
+            continue
+        cleaned.append(label)
+    if not cleaned:
+        cleaned = [Status.COMPLETED]
+    return None, cleaned
 
 
 def all_lowercase(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
@@ -509,6 +525,12 @@ enable_season_sorting = OptionBool("misc", "enable_season_sorting", True)
 verify_xff_header = OptionBool("misc", "verify_xff_header", False)
 confirm_mass_edit_queue = OptionBool("misc", "confirm_mass_edit_queue", False)
 confirm_mass_edit_history = OptionBool("misc", "confirm_mass_edit_history", False)
+history_mark_statuses = OptionList(
+    "misc",
+    "history_mark_statuses",
+    [Status.COMPLETED],
+    validation=clean_history_mark_statuses,
+)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
