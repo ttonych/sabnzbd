@@ -1,29 +1,70 @@
-name: Build Windows x64 zip (manual, master only)
+name: Build Windows x64 zip (manual + PRs to master)
 
 on:
   workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch / tag / commit SHA to build (default: master)"
+        required: false
+        default: "master"
+
+  pull_request:
+    branches: [ master ]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+# Минимальные права: только чтение содержимого
+permissions:
+  contents: read
 
 env:
   PYTHONNODEBUGRANGES: 1
 
+concurrency:
+  group: build-win64-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_win64_zip:
-    # Даже если workflow_dispatch запустят не на master — job не выполнится
-    if: github.ref == 'refs/heads/master'
+    name: Build Windows x64 zip
     runs-on: windows-2022
     timeout-minutes: 30
 
+    # Не собирать draft PR (можно убрать, если хочешь собирать и draft)
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+
     steps:
-      - name: Checkout master
+      - name: Select ref to build
+        id: ref
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # Собирать именно head SHA PR (ветку автора PR)
+            echo "ref=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+            echo "label=pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=${{ inputs.ref }}" >> "$GITHUB_OUTPUT"
+            echo "label=manual-${{ inputs.ref }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout (no credentials)
         uses: actions/checkout@v5
         with:
-          ref: master
+          ref: ${{ steps.ref.outputs.ref }}
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Safety check (no upstream remote)
+      - name: Safety check (no upstream push)
+        shell: pwsh
         run: |
           git remote -v
-          if (git remote -v | Select-String -Pattern "github.com/sabnzbd/sabnzbd") { throw "ERROR: upstream remote detected!" }
+          # Запрещаем любые упоминания сабрепо как remote (страховка)
+          if (git remote -v | Select-String -Pattern "github.com/sabnzbd/sabnzbd") {
+            throw "ERROR: upstream remote detected in this workflow run!"
+          }
+          # Доп. страховка: убеждаемся, что сборка идёт в твоём репо
+          if ("${{ github.repository }}" -ne "ttonych/sabnzbd") {
+            throw "ERROR: wrong repository context: ${{ github.repository }}"
+          }
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -36,6 +77,7 @@ jobs:
             builder/requirements.txt
 
       - name: Install Python dependencies
+        shell: pwsh
         run: |
           python --version
           python -m pip install --upgrade pip wheel
@@ -43,11 +85,12 @@ jobs:
           pip install --upgrade -r builder/requirements.txt --no-dependencies
 
       - name: Build Windows standalone binary (zip)
+        shell: pwsh
         run: python builder/package.py binary
 
       - name: Upload artifact (zip)
         uses: actions/upload-artifact@v4
         with:
-          name: sabnzbd-win64-bin
+          name: sabnzbd-win64-bin-${{ steps.ref.outputs.label }}
           path: "*-win64-bin.zip"
           if-no-files-found: error
